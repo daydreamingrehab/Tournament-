@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M1cky Team</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(26, 26, 26, 0.9) 70%);
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 1s ease-in;
+        }
+        .header h1 {
+            font-size: clamp(36px, 5vw, 60px);
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            margin: 0;
+        }
+        .header p {
+            font-size: clamp(16px, 2vw, 20px);
+            color: #d3d3d3;
+            margin: 10px 0;
+        }
+        .search-bar {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .search-bar input {
+            padding: 10px;
+            width: 70%;
+            max-width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px 0 0 5px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 16px;
+            outline: none;
+        }
+        .search-bar button {
+            padding: 10px 15px;
+            border: none;
+            background: #ffffff;
+            color: #1a1a1a;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .search-bar button:hover {
+            background: #d3d3d3;
+        }
+        .pairs-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px 0;
+        }
+        .pair {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        .pair:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+            border-color: #ffffff;
+        }
+        .pair.highlight {
+            border-color: #ffcc00;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+            background: rgba(255, 204, 0, 0.1);
+        }
+        .pair span {
+            display: block;
+            font-size: clamp(14px, 1.5vw, 18px);
+            color: #ffffff;
+        }
+        .pair .id {
+            display: none;
+            font-size: clamp(12px, 1.2vw, 16px);
+            color: #d3d3d3;
+            margin-top: 10px;
+        }
+        .pair.active .id {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        .info, .instructions {
+            padding: 40px 0;
+            text-align: center;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        .info h2, .instructions h2 {
+            font-size: clamp(24px, 3vw, 36px);
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .info a, .instructions p {
+            color: #d3d3d3;
+            text-decoration: none;
+            font-size: clamp(14px, 1.5vw, 20px);
+            display: block;
+            margin: 10px 0;
+            transition: color 0.3s ease;
+        }
+        .info a:hover {
+            color: #ffffff;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #d3d3d3;
+            font-size: clamp(12px, 1vw, 14px);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 600px) {
+            .pairs-list {
+                grid-template-columns: 1fr;
+            }
+            .pair {
+                padding: 10px;
+            }
+            .search-bar input {
+                width: 60%;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="particles"></div>
+    <div class="container">
+        <div class="header">
+            <h1>M1cky Team</h1>
+            <p>Привет, выживший!</p>
+            <p>Дата: <span id="current-date"></span></p>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Введите ID или @username">
+            <button onclick="searchPair()">🔍</button>
+        </div>
+
+        <section class="pairs-list" id="pairs">
+            <h2 style="grid-column: 1 / -1; text-align: center; color: #ffffff; font-size: clamp(20px, 2.5vw, 32px); margin-bottom: 20px;">Список пар 2-го этапа:</h2>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>1. @kirakosyann666 VS @Tabasaranski</span>
+                <span class="id">104853026 VS 162149584</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>2. @DeathGun5516 VS @ofatsumk</span>
+                <span class="id">120199656 VS 186620935</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>3. @Hiro996 VS @Barb_DwyerWWWWWWWW</span>
+                <span class="id">140135535 VS 177909117</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>4. @FinixGhoul VS @allown01</span>
+                <span class="id">135781743 VS 182579116</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>5. @yUOiEMJIxiZ VS @help_squad</span>
+                <span class="id">228732045 VS 104392253</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>6. @Sumrak52 VS @iris_Reoshi</span>
+                <span class="id">148789857 VS 144898507</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>7. @stephan0100 VS @verymaloy</span>
+                <span class="id">233501447 VS 245713939</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>8. @PACCTPOEHCMEPTHO VS @razumfzm</span>
+                <span class="id">61003223 VS 192238522</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>9. @shokoner VS @Kollibriz</span>
+                <span class="id">180808085 VS 195947953</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>10. @YEBERBIK VS @danya_kayoo</span>
+                <span class="id">81325242 VS 144346782</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>11. @karvyakh VS @hideos1</span>
+                <span class="id">83288267 VS 122835503</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>12. @Tandjiro_san VS @Himen_Kazino</span>
+                <span class="id">143273215 VS 211613587</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>13. @Milligantrip VS @wwwertin</span>
+                <span class="id">78999933 VS 204016709</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>14. @HANAGAKIso2 VS @FanKan22</span>
+                <span class="id">164958164 VS 186196937</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>15. @sarogi1 VS @dekoWatchDemo</span>
+                <span class="id">150137245 VS 245401515</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>16. @chlendani1111 VS @tgkveteraN</span>
+                <span class="id">136893331 VS 234618863</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>17. @bober9012 VS @MaloBESA</span>
+                <span class="id">130886559 VS 216177553</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>18. @iswexteri VS @why_ilik</span>
+                <span class="id">191830818 VS 116306852</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>19. @Dufjfjfjddhdh VS @I39_92_88</span>
+                <span class="id">184932927 VS 186084087</span>
+            </div>
+            <div class="pair" onclick="toggleActive(this)">
+                <span>20. @EwropoL VS @m1ndy7</span>
+                <span class="id">198728988 VS 30903094</span>
+            </div>
+        </section>
+
+        <section class="instructions">
+            <h2>Инструкция</h2>
+            <p>1. Нажмите на пару, чтобы увидеть ID участников.</p>
+            <p>2. Используйте поиск выше: введите свой ID или @username, нажмите на лупу, и сайт найдёт вашу пару.</p>
+        </section>
+
+        <section class="info">
+            <h2>Информация про нас</h2>
+            <p>Наши контакты:</p>
+            <a href="https://x.com/lostinfigment" target="_blank">@lostinfigment</a>
+            <a href="https://x.com/iswexteri" target="_blank">@iswexteri</a>
+            <p>Наш новостник:</p>
+            <a href="https://t.me/m1ckkyy_so2" target="_blank">https://t.me/m1ckkyy_so2</a>
+            <p>Наш Ютуб:</p>
+            <a href="https://www.youtube.com/@huge_m1cky" target="_blank">https://www.youtube.com/@huge_m1cky</a>
+        </section>
+    </div>
+
+    <footer>
+        <p>Спасибо за внимание! © M1cky Team 2025</p>
+    </footer>
+
+    <script>
+        // Отображение текущей даты
+        const dateElement = document.getElementById('current-date');
+        const today = new Date();
+        dateElement.textContent = today.toLocaleDateString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Переключение активного состояния пары
+        function toggleActive(element) {
+            element.classList.toggle('active');
+        }
+
+        // Поиск пары
+        function searchPair() {
+            const input = document.getElementById('search-input').value.trim().toLowerCase();
+            if (!input) return;
+
+            const pairs = document.querySelectorAll('.pair');
+            pairs.forEach(pair => pair.classList.remove('highlight'));
+
+            pairs.forEach(pair => {
+                const usernameText = pair.querySelector('span:first-child').textContent.toLowerCase();
+                const idText = pair.querySelector('.id').textContent.toLowerCase();
+
+                if (usernameText.includes(input) || idText.includes(input)) {
+                    pair.classList.add('highlight');
+                    pair.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    pair.classList.add('active');
+                }
+            });
+        }
+
+        // Поиск по нажатию Enter
+        document.getElementById('search-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchPair();
+            }
+        });
+
+        // Простая симуляция частиц
+        const particlesDiv = document.querySelector('.particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = '2px';
+            particle.style.height = '2px';
+            particle.style.background = '#ffffff';
+            particle.style.borderRadius = '50%';
+            particle.style.opacity = Math.random();
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animation = `float ${Math.random() * 5 + 5}s infinite`;
+            particlesDiv.appendChild(particle);
+        }
+    </script>
+    <style>
+        @keyframes float {
+            0% { transform: translateY(0); opacity: 0.8; }
+            50% { transform: translateY(-20px); opacity: 0.3; }
+            100% { transform: translateY(0); opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
